@@ -1,0 +1,221 @@
+.user-card {
+    width: 360px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: #0f172a
+}
+
+.banner {
+    position: relative;
+    height: 110px;
+    background: #f3f4f6
+}
+
+.banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.banner-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #eef2ff, #e6fffa)
+}
+
+.avatar {
+    position: absolute;
+    left: 16px;
+    bottom: -36px;
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 4px solid #fff;
+    background: #ddd
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover
+}
+
+.content {
+    padding: 48px 16px 16px
+}
+
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px
+}
+
+.name {
+    font-size: 18px;
+    font-weight: 700
+}
+
+.email {
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 4px
+}
+
+.meta {
+    color: #475569;
+    font-size: 13px;
+    margin-top: 6px
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.upload {
+    display: inline-block;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    border: 1px dashed #e2e8f0;
+    color: #0f172a;
+    font-size: 13px
+}
+
+.bio {
+    margin-top: 12px;
+    color: #0f172a;
+    font-size: 14px;
+    min-height: 40px
+}
+
+.edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.edit-fields input,
+.edit-fields textarea,
+.edit-fields select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e6eef6;
+    font-size: 14px
+}
+
+.edit-fields textarea {
+    min-height: 80px;
+    resize: vertical
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px
+}
+
+.primary {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.ghost {
+    background: transparent;
+    border: 1px solid #e6eef6;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.message {
+    margin-top: 10px;
+    color: #dc2626
+}
+
+.footer-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* ── Change password form ──────────────────────── */
+.cp-form {
+    margin-top: 14px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cp-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.cp-form input {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    font-size: 13px;
+    color: #1e293b;
+    background: #fff;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cp-form input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+}
+
+.cp-message {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+.cp-message.error  { color: #dc2626; background: #fef2f2; }
+.cp-message.success { color: #16a34a; background: #f0fdf4; }
+
+.cp-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+.cp-actions .primary {
+    flex: 1;
+    background: linear-gradient(90deg, #6c63ff, #64d2ff);
+    color: #fff;
+    border: none;
+    padding: 7px 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+.cp-actions .primary:disabled { opacity: 0.7; cursor: default; }
+.cp-actions .ghost {
+    padding: 7px 14px;
+    font-size: 13px;
+}
