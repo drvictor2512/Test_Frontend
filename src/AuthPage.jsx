@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { signup, signin, sendOtp, forgotPassword, resetPassword } from './api'
+import { signup, signin, sendOtp, verifyOtp, forgotPassword, resetPassword } from './api'
 import './auth.css'
 
 export default function AuthPage({ onLogin }) {
     const [mode, setMode] = useState('login') // 'login' | 'register' | 'forgot'
-    const [form, setForm] = useState({ email: '', password: '', name: '', gender: '', dateOfBirth: '', otp: '' })
+    const [form, setForm] = useState({ email: '', password: '', name: '', gender: '', dateOfBirth: '' })
     const [message, setMessage] = useState('')
-    const [otpNeeded, setOtpNeeded] = useState(false)
-    const [otp, setOtp] = useState('')
+    const [registerStep, setRegisterStep] = useState(1) // 1: fill form, 2: verify OTP
+    const [signupOtp, setSignupOtp] = useState('')
     const [loading, setLoading] = useState(false)
 
     // Forgot password states
@@ -22,7 +22,8 @@ export default function AuthPage({ onLogin }) {
     const switchMode = (newMode) => {
         setMode(newMode)
         setMessage('')
-        setOtpNeeded(false)
+        setRegisterStep(1)
+        setSignupOtp('')
         setForgotStep(1)
         setForgotEmail('')
         setForgotOtp('')
@@ -38,9 +39,11 @@ export default function AuthPage({ onLogin }) {
             const payload = { email: form.email, password: form.password, name: form.name }
             if (form.gender) payload.gender = form.gender
             if (form.dateOfBirth) payload.dateOfBirth = form.dateOfBirth
-            const res = await signup(payload)
-            setMessage(res.message || 'Đăng ký thành công. Vui lòng gửi OTP để xác thực.')
-            switchMode('login')
+            await signup(payload)
+            // Tự động gửi OTP sau khi đăng ký thành công
+            await sendOtp({ email: form.email })
+            setRegisterStep(2)
+            setMessage('Đăng ký thành công! OTP đã được gửi đến email của bạn.')
         } catch (err) {
             setMessage(err.message || 'Lỗi đăng ký')
         } finally {
@@ -48,14 +51,33 @@ export default function AuthPage({ onLogin }) {
         }
     }
 
-    const doSendOtp = async () => {
+    const doResendOtp = async () => {
         setMessage('')
         setLoading(true)
         try {
-            const res = await sendOtp({ email: form.email })
-            setMessage(res.message || 'Đã gửi OTP. Kiểm tra email.')
+            await sendOtp({ email: form.email })
+            setMessage('Đã gửi lại OTP. Kiểm tra email.')
         } catch (err) {
             setMessage(err.message || 'Lỗi gửi OTP')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const doVerifyOtp = async (e) => {
+        e.preventDefault()
+        if (!signupOtp) {
+            setMessage('Vui lòng nhập mã OTP')
+            return
+        }
+        setMessage('')
+        setLoading(true)
+        try {
+            const res = await verifyOtp({ email: form.email, otp: signupOtp })
+            setMessage(res.message || 'Xác thực thành công!')
+            setTimeout(() => switchMode('login'), 1200)
+        } catch (err) {
+            setMessage(err.message || 'OTP không hợp lệ')
         } finally {
             setLoading(false)
         }
@@ -66,47 +88,14 @@ export default function AuthPage({ onLogin }) {
         setMessage('')
         setLoading(true)
         try {
-            const payload = { email: form.email, password: form.password }
-            if (otp) payload.otp = otp
-            const res = await signin(payload)
+            const res = await signin({ email: form.email, password: form.password })
             setMessage(res.message || 'Đăng nhập thành công')
-            setOtpNeeded(false)
             if (res.token) {
                 localStorage.setItem('token', res.token)
                 onLogin && onLogin(true)
             }
         } catch (err) {
-            if (err.otpRequired) {
-                setOtpNeeded(true)
-                setMessage('Đã gửi mã OTP. Vui lòng kiểm tra email.')
-                try {
-                    await sendOtp({ email: form.email })
-                } catch (sErr) {
-                    setMessage((sErr && sErr.message) ? sErr.message : 'Không thể gửi OTP tự động')
-                }
-            } else {
-                setMessage(err.message || 'Lỗi đăng nhập')
-            }
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const verifyOtpAndSignin = async (e) => {
-        e && e.preventDefault()
-        setMessage('')
-        setLoading(true)
-        try {
-            const payload = { email: form.email, password: form.password, otp }
-            const res = await signin(payload)
-            setMessage(res.message || 'Đăng nhập thành công')
-            setOtpNeeded(false)
-            if (res.token) {
-                localStorage.setItem('token', res.token)
-                onLogin && onLogin(true)
-            }
-        } catch (err) {
-            setMessage(err.message || 'Lỗi xác thực OTP')
+            setMessage(err.message || 'Lỗi đăng nhập')
         } finally {
             setLoading(false)
         }
@@ -167,8 +156,8 @@ export default function AuthPage({ onLogin }) {
                     </div>
                 )}
 
-                {/* Register form */}
-                {mode === 'register' && (
+                {/* Register form - Step 1: fill info */}
+                {mode === 'register' && registerStep === 1 && (
                     <form onSubmit={doSignup} className="form">
                         <input name="name" placeholder="Tên" value={form.name} onChange={handleChange} required />
                         <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
@@ -179,26 +168,45 @@ export default function AuthPage({ onLogin }) {
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                         </select>
-                        <button type="submit" className="primary" disabled={loading}>{loading ? 'Vui lòng chờ...' : 'Đăng ký'}</button>
+                        <button type="submit" className="primary" disabled={loading}>
+                            {loading ? 'Vui lòng chờ...' : 'Đăng ký'}
+                        </button>
+                    </form>
+                )}
+
+                {/* Register form - Step 2: verify OTP */}
+                {mode === 'register' && registerStep === 2 && (
+                    <form onSubmit={doVerifyOtp} className="form">
+                        <p style={{ fontSize: 14, color: '#94a3b8', margin: '4px 0 8px' }}>
+                            Mã OTP đã được gửi đến <strong>{form.email}</strong>
+                        </p>
+                        <input
+                            type="text"
+                            placeholder="Nhập mã OTP"
+                            value={signupOtp}
+                            onChange={e => setSignupOtp(e.target.value)}
+                            maxLength={6}
+                            className="otp-input"
+                            autoFocus
+                            required
+                        />
+                        <button type="submit" className="primary" disabled={loading}>
+                            {loading ? 'Đang xác thực...' : 'Xác thực tài khoản'}
+                        </button>
+                        <button type="button" className="ghost" onClick={doResendOtp} disabled={loading}>
+                            Gửi lại OTP
+                        </button>
                     </form>
                 )}
 
                 {/* Login form */}
                 {mode === 'login' && (
-                    <form onSubmit={otpNeeded ? verifyOtpAndSignin : doSignin} className="form">
+                    <form onSubmit={doSignin} className="form">
                         <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
                         <input name="password" type="password" placeholder="Mật khẩu" value={form.password} onChange={handleChange} required />
-                        {otpNeeded && (
-                            <input name="otp" placeholder="OTP" value={otp} onChange={(e) => setOtp(e.target.value)} autoFocus />
-                        )}
-                        <div className="actions">
-                            <button type="submit" className="primary" disabled={loading}>
-                                {loading ? (otpNeeded ? 'Đang xác thực...' : 'Đang xử lý...') : (otpNeeded ? 'Xác thực OTP' : 'Đăng nhập')}
-                            </button>
-                            {otpNeeded && (
-                                <button type="button" onClick={doSendOtp} disabled={loading} className="ghost">Gửi lại OTP</button>
-                            )}
-                        </div>
+                        <button type="submit" className="primary" disabled={loading}>
+                            {loading ? 'Đang xử lý...' : 'Đăng nhập'}
+                        </button>
                         <button type="button" className="forgot-link" onClick={() => switchMode('forgot')} disabled={loading}>
                             Quên mật khẩu?
                         </button>

@@ -32,10 +32,8 @@ export function sendOtp(payload) {
     return handle(client.post('/auth/otp', payload))
 }
 
-export function signout() {
-    const token = localStorage.getItem('token')
-    if (!token) return Promise.reject({ message: 'No token' })
-    return handle(client.post('/auth/signout', {}, { headers: { Authorization: `Bearer ${token}` } }))
+export function verifyOtp(payload) {
+    return handle(client.post('/auth/verify-otp', payload))
 }
 
 export function changePassword(payload) {
