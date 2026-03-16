@@ -43,7 +43,7 @@ export default function InfoPanel({
                     <>
                         <CombinedAvatar participants={groupPanelConv.participants} size={72} />
                         <div style={{ fontWeight: 700, fontSize: 16, marginTop: 10, textAlign: 'center', color: '#0f172a' }}>
-                            {groupPanelConv.groupName || (groupPanelConv.groupId && groupPanelConv.groupId.name) || 'Nhóm'}
+                            {groupPanelConv.groupName || groupPanelConv.group?.name || 'Nhóm'}
                         </div>
                         <div style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
                             {(groupPanelConv.participants || []).length} thành viên
@@ -54,7 +54,7 @@ export default function InfoPanel({
                             return (
                                 <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
                                     <button className="ghost" style={{ fontSize: 12, padding: '5px 10px' }} onClick={async () => { try { const res = await getGroupInviteLink(groupPanelConv._id); setInviteCode(res.inviteCode); setShowInviteModal(true) } catch (e) { alert(e.message || 'Lỗi') } }}>🔗 Link mời</button>
-                                    <button className="ghost" style={{ fontSize: 12, padding: '5px 10px' }} onClick={() => { const cur = groupPanelConv.groupName || (groupPanelConv.groupId && groupPanelConv.groupId.name) || ''; setRenameInput(cur); setShowRenameModal(true) }}>✏️ Đổi tên</button>
+                                    <button className="ghost" style={{ fontSize: 12, padding: '5px 10px' }} onClick={() => { const cur = groupPanelConv.groupName || groupPanelConv.group?.name || ''; setRenameInput(cur); setShowRenameModal(true) }}>✏️ Đổi tên</button>
                                     {canLeave && <button className="group-action-btn danger" style={{ fontSize: 12, padding: '5px 10px' }} onClick={() => handleLeaveGroup(groupPanelConv._id)}>🚪 Rời nhóm</button>}
                                 </div>
                             )
@@ -114,8 +114,8 @@ export default function InfoPanel({
                             {(groupPanelConv.participants || []).map(p => {
                                 const pid = String(p._id || p.userId)
                                 const displayName = p.name || pid
-                                const ownerId = groupPanelConv.groupId?.ownerId || groupPanelConv.ownerId
-                                const deputyIds = groupPanelConv.groupId?.deputyIds || groupPanelConv.deputyIds || []
+                                const ownerId = groupPanelConv.group?.ownerId || groupPanelConv.ownerId
+                                const deputyIds = groupPanelConv.group?.deputyIds || groupPanelConv.deputyIds || []
                                 const isOwner = ownerId && String(ownerId) === String(currentUser?._id)
                                 const isDeputy = Array.isArray(deputyIds) && deputyIds.map(String).includes(String(currentUser?._id))
                                 const isSelf = pid === String(currentUser?._id)

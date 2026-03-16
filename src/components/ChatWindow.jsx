@@ -4,8 +4,8 @@ import CombinedAvatar from './CombinedAvatar'
 import { isImageUrl, isVideoUrl, isGifUrl, isDocumentUrl, basenameFromUrl, downloadFile } from '../utils/mediaHelpers'
 import { deleteGroup, unblockUser } from '../api'
 
-const AI_BOT_NAME = 'Chatbox AI'
-const AI_BOT_AVATAR = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/120px-Google_Gemini_logo.svg.png'
+const AI_BOT_NAME = 'Zting AI Chatbot'
+const AI_BOT_AVATAR = 'https://img.icons8.com/?size=100&id=37410&format=png&color=000000'
 
 export default function ChatWindow({
     selectedConv,
@@ -86,7 +86,7 @@ export default function ChatWindow({
                             <div>
                                 <div style={{ fontWeight: 700 }}>
                                     {isGroup
-                                        ? (selectedConv.groupName || (selectedConv.groupId ? selectedConv.groupId.name : 'Nhóm'))
+                                        ? (selectedConv.groupName || selectedConv.group?.name || 'Nhóm')
                                         : (other?.name || 'Trò chuyện')}
                                 </div>
                                 <div style={{ fontSize: 13, color: '#64748b' }}>
@@ -113,7 +113,7 @@ export default function ChatWindow({
                             {isGroup && (
                                 <>
                                     <button className="ghost" onClick={() => {
-                                        const cur = selectedConv.groupName || (selectedConv.groupId && selectedConv.groupId.name) || ''
+                                        const cur = selectedConv.groupName || selectedConv.group?.name || ''
                                         setRenameInput(cur)
                                         setShowRenameModal(true)
                                     }}>Đổi tên</button>

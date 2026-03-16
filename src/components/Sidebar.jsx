@@ -90,7 +90,7 @@ export default function Sidebar({
                             {filteredConversations.filter(conv => !conv.isAI).map(conv => {
                                 const other = conv.type === 'DIRECT' ? otherParticipant(conv.participants) : null
                                 const avatar = other ? (other.avatarUrl || 'https://via.placeholder.com/44') : 'https://via.placeholder.com/44'
-                                const title = conv.type === 'DIRECT' ? (other?.name || 'Direct') : (conv.groupName || (conv.groupId ? conv.groupId.name : 'Group'))
+                                const title = conv.type === 'DIRECT' ? (other?.name || 'Direct') : (conv.groupName || conv.group?.name || 'Group')
                                 return (
                                     <div key={conv._id} onClick={() => openConversation(conv)} className={`conversation-item ${selectedConv && selectedConv._id === conv._id ? 'active' : ''}`} style={{ position: 'relative' }}>
                                         <div style={{ position: 'relative' }} onClick={e => { e.stopPropagation(); if (conv.type === 'DIRECT') other && (() => { })() }}>
@@ -184,7 +184,7 @@ export default function Sidebar({
                                 {(conversations.filter(c => c.type === 'GROUP') || []).map(g => (
                                     <div key={g._id} className="friend-item">
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 700, color: '#fff' }}>{g.groupName || (g.groupId ? g.groupId.name : 'Nhóm')}</div>
+                                            <div style={{ fontWeight: 700, color: '#fff' }}>{g.groupName || g.group?.name || 'Nhóm'}</div>
                                             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>{(g.participants || []).length} thành viên</div>
                                         </div>
                                         <div>

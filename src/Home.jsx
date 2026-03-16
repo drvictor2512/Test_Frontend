@@ -14,7 +14,7 @@ import InfoPanel from './components/InfoPanel'
 import Modals from './components/Modals'
 
 const AI_BOT_ID = '000000000000000000000001'
-const AI_BOT_NAME = 'Chatbox AI'
+const AI_BOT_NAME = 'Zting AI Chatbot'
 const AI_BOT_AVATAR = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/120px-Google_Gemini_logo.svg.png'
 const AI_STREAM_ID = '__ai_streaming__'
 const AI_WELCOME_MSG = {
@@ -146,7 +146,7 @@ export default function Home({ onLogout }) {
                 const other = (conv.participants || []).find(p => String(p._id) !== String(conv._id))
                 return (other?.name || '').toLowerCase().includes(q) || (other?.email || '').toLowerCase().includes(q)
             }
-            if ((conv.groupName || '').toLowerCase().includes(q)) return true
+            if ((conv.groupName || conv.name || '').toLowerCase().includes(q)) return true
             return (conv.participants || []).some(p => (p.name || '').toLowerCase().includes(q))
         })
     }, [conversations, searchQuery])
@@ -493,7 +493,7 @@ export default function Home({ onLogout }) {
         try {
             await renameGroup({ conversationId: selectedConv._id, name: newName })
             await fetchConversations()
-            setSelectedConv(prev => prev ? ({ ...prev, groupName: newName }) : prev)
+            setSelectedConv(prev => prev ? ({ ...prev, groupName: newName, name: newName }) : prev)
             setShowRenameModal(false); alert('Đổi tên thành công')
         } catch (err) { alert(err.message || 'Lỗi khi đổi tên') }
     }
