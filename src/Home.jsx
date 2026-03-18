@@ -15,7 +15,7 @@ import Modals from './components/Modals'
 
 const AI_BOT_ID = '000000000000000000000001'
 const AI_BOT_NAME = 'Zting AI Chatbot'
-const AI_BOT_AVATAR = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/120px-Google_Gemini_logo.svg.png'
+const AI_BOT_AVATAR = 'https://img.icons8.com/?size=100&id=37410&format=png&color=000000'
 const AI_STREAM_ID = '__ai_streaming__'
 const AI_WELCOME_MSG = {
     _id: '__ai_welcome__',
@@ -167,7 +167,7 @@ export default function Home({ onLogout }) {
     useEffect(() => {
         if (!currentUser) return
         try {
-            const socket = socketIOClient('https://chatapp-backend-eiae.onrender.com')
+            const socket = socketIOClient('https://chatapp-backend-cfys.onrender.com')
             socketRef.current = socket
             socket.on('connect', () => socket.emit('join', { userId: currentUser._id }))
 

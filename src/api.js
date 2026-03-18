@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE = 'https://chatapp-backend-eiae.onrender.com'
+const BASE = 'https://chatapp-backend-cfys.onrender.com'
 
 const client = axios.create({
     baseURL: BASE,
